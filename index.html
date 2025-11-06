@@ -13,23 +13,23 @@
 
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-            background: #0f172a;
-            color: #fff;
-            padding: 20px;
+            background: #000000;
+            color: #ffffff;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            background: #1e293b;
+            background: #000000;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(203, 0, 0, 0.3);
+            border: 2px solid #cb0000;
         }
 
         .header {
-            background: linear-gradient(135deg, #2563eb, #22c55e);
-            color: #fff;
+            background: linear-gradient(135deg, #cb0000, #8b0000);
+            color: #ffffff;
             padding: 24px;
             text-align: center;
         }
@@ -45,25 +45,37 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
-        @media (max-width: 968px) {
+        @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
             }
         }
 
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #cb0000;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
         .stage {
             position: relative;
             width: 100%;
-            height: 70vh;
-            min-height: 500px;
+            height: 92vh;
+            max-height: 100vh;
             border-radius: 12px;
             overflow: hidden;
             background: #000;
-            border: 2px solid #334155;
         }
 
         .stage video,
@@ -74,6 +86,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 0;
         }
 
         .stage canvas {
@@ -94,50 +107,88 @@
             z-index: 10;
         }
 
-        .badge {
+        .pill-badge {
             position: absolute;
             top: 12px;
             left: 12px;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.75);
             color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
             font-weight: 700;
             z-index: 10;
         }
 
-        .status-badge {
+        .putt-counter {
             position: absolute;
             top: 12px;
             right: 12px;
+            background: rgba(203, 0, 0, 0.9);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 16px;
+            font-weight: 800;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .status-floating {
+            position: absolute;
+            top: 60px;
+            right: 12px;
             background: rgba(255, 255, 255, 0.9);
             color: #111827;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 8px;
             font-weight: 700;
             z-index: 10;
+        }
+
+        .deviation-display {
+            position: absolute;
+            top: 100px;
+            right: 12px;
+            background: rgba(203, 0, 0, 0.85);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 10;
+            display: none;
+        }
+
+        .armed-badge {
+            background: #FF9800;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        
+        .armed-badge.armed {
+            background: #4CAF50;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         button {
             border: 0;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .btn-primary {
@@ -155,136 +206,76 @@
             color: #fff;
         }
 
-        .results-panel {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #334155;
+        .status {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
         }
 
-        .results-panel h3 {
-            font-size: 20px;
-            margin-bottom: 16px;
-            color: #e2e8f0;
+        .status.waiting {
+            background: #eff6ff;
+            color: #1e40af;
         }
 
-        .putts-grid {
+        .status.detecting {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status.completed {
+            background: #dcfce7;
+            color: #14532d;
+        }
+
+        .putts {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-top: 12px;
         }
 
-        .putt-card {
-            background: #1e293b;
-            border: 2px solid #334155;
+        .putt {
+            background: #fff;
+            border: 1px solid #e5e7eb;
             border-radius: 10px;
-            padding: 16px;
-            text-align: center;
+            padding: 12px;
         }
 
-        .putt-card.active {
-            border-color: #22c55e;
-            background: #1e3a2e;
-        }
-
-        .putt-card.completed {
-            border-color: #2563eb;
-            background: #1e3a5e;
-        }
-
-        .putt-number {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            color: #e2e8f0;
-        }
-
-        .putt-status {
+        .pill {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 2px 8px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
-            margin-top: 8px;
         }
 
-        .status-pending {
-            background: #475569;
-            color: #fff;
+        .pill-ok {
+            background: #dcfce7;
+            color: #166534;
         }
 
-        .status-detecting {
-            background: #fbbf24;
-            color: #000;
-        }
-
-        .status-completed {
-            background: #22c55e;
-            color: #fff;
-        }
-
-        .summary {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .summary h4 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #e2e8f0;
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #334155;
-        }
-
-        .summary-item:last-child {
-            border-bottom: none;
-        }
-
-        .summary-label {
-            color: #94a3b8;
-        }
-
-        .summary-value {
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .status-text {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .status-waiting {
-            background: #1e3a5e;
-            color: #93c5fd;
-        }
-
-        .status-detecting {
-            background: #1e3a2e;
-            color: #86efac;
-        }
-
-        .status-completed {
-            background: #1e3a2e;
-            color: #86efac;
+        .pill-warn {
+            background: #fee2e2;
+            color: #b91c1c;
         }
     </style>
     <script>
-        // WebSocket URL - can be overridden via ?ws= parameter
         const WS_BASE = new URLSearchParams(location.search).get('ws') || 'ws://113.201.14.131:43216';
         const WS_URL = WS_BASE.replace(/\/$/, '') + '/ws';
+        
+        // Armed zone configuration
+        const ARMED_ZONE_RADIUS = 40; // pixels - radius of the hollow circle
+        const ARMED_ZONE_CENTER_Y = 0.5; // 50% from top (center of screen)
+        
+        // Pixel to real-world conversion
+        // Default: Assuming 640px width represents ~150cm (1.5m) putting mat width
+        // This gives: 1 pixel ≈ 0.234 cm (or ~0.092 inches)
+        // Can be calibrated based on actual setup
+        const PIXELS_TO_CM = 0.234; // cm per pixel (adjust based on your camera setup)
+        const PIXELS_TO_INCHES = 0.092; // inches per pixel
+        const USE_METRIC = true; // true for cm, false for inches
     </script>
 </head>
 <body>
@@ -294,26 +285,30 @@
         </div>
         <div class="content">
             <div class="grid">
-                <div>
+                <div class="card">
+                    <h3>Live Camera</h3>
                     <div class="stage" id="stage">
                         <video id="camera" autoplay muted playsinline style="display:none"></video>
                         <canvas id="previewCanvas"></canvas>
-                        <div class="badge" id="sessionBadge">Idle</div>
-                        <div class="status-badge" id="statusBadge">Ready</div>
+                        <div class="pill-badge" id="sessionBadge">Idle</div>
+                        <div class="putt-counter" id="puttCounter">0 / 3</div>
+                        <div class="status-floating" id="statusFloating">Ready</div>
+                        <div class="deviation-display" id="deviationDisplay">Deviation: 0.0cm</div>
+                        <span id="armedBadge" class="armed-badge" style="display: none; position: absolute; top: 140px; right: 12px; z-index: 10;">Armed</span>
                         <div class="controls-floating">
                             <div style="display:flex; gap:8px;">
                                 <button id="cameraBtn" class="btn-success">Use Camera</button>
-                                <button id="startBtn" class="btn-primary" disabled>Start Detection</button>
+                                <button id="startBtn" class="btn-primary" disabled>Start</button>
                             </div>
                             <button id="stopBtn" class="btn-danger" disabled>Stop</button>
                         </div>
                     </div>
-                    <div id="status" class="status-text status-waiting">Ready — Start camera to begin</div>
+                    <div id="status" class="status waiting">Ready — Start camera to begin</div>
                 </div>
-                <div class="results-panel">
+                <div class="card">
                     <h3>Results</h3>
-                    <div class="putts-grid" id="puttsGrid"></div>
-                    <div class="summary" id="summary"></div>
+                    <div class="putts" id="putts"></div>
+                    <div id="summary" style="margin-top:12px"></div>
                 </div>
             </div>
         </div>
@@ -326,9 +321,12 @@
                 this.canvas = document.getElementById('previewCanvas');
                 this.ctx = this.canvas.getContext('2d');
                 this.sessionBadge = document.getElementById('sessionBadge');
-                this.statusBadge = document.getElementById('statusBadge');
+                this.statusFloating = document.getElementById('statusFloating');
+                this.puttCounter = document.getElementById('puttCounter');
+                this.deviationDisplay = document.getElementById('deviationDisplay');
+                this.armedBadge = document.getElementById('armedBadge');
                 this.statusEl = document.getElementById('status');
-                this.puttsGrid = document.getElementById('puttsGrid');
+                this.puttsGrid = document.getElementById('putts');
                 this.summaryEl = document.getElementById('summary');
 
                 this.ws = null;
@@ -337,11 +335,15 @@
                 this.inflight = false;
                 this.stream = null;
                 
-                // Store paths for all putts
-                this.puttPaths = [[], [], []]; // 3 putts
+                this.puttPaths = [[], [], []];
                 this.currentPuttIndex = 0;
+                this.currentBallPosition = null;
+                this.isArmed = false;
+                this.centerX = 0;
+                this.pixelsToCm = PIXELS_TO_CM;
+                this.pixelsToInches = PIXELS_TO_INCHES;
+                this.useMetric = USE_METRIC;
 
-                // Setup event listeners
                 document.getElementById('cameraBtn').onclick = () => this.startCamera();
                 document.getElementById('startBtn').onclick = () => this.startDetection();
                 document.getElementById('stopBtn').onclick = () => this.stop();
@@ -349,8 +351,8 @@
 
             setStatus(text, cls) {
                 this.statusEl.textContent = text;
-                this.statusEl.className = `status-text status-${cls}`;
-                if (this.statusBadge) this.statusBadge.textContent = text;
+                this.statusEl.className = `status ${cls}`;
+                if (this.statusFloating) this.statusFloating.textContent = text;
             }
 
             async startCamera() {
@@ -364,13 +366,14 @@
                     await this.video.play();
                     await new Promise(r => this.video.onloadedmetadata = r);
                     
-                    // Set canvas size to match video
                     this.canvas.width = this.video.videoWidth;
                     this.canvas.height = this.video.videoHeight;
+                    this.centerX = this.canvas.width * 0.5;
                     
                     document.getElementById('startBtn').disabled = false;
-                    this.setStatus('Camera ready — Start detection to track golf ball', 'waiting');
+                    this.setStatus('Camera ready — Start session to analyze', 'waiting');
                     if (this.sessionBadge) this.sessionBadge.textContent = 'Camera Ready';
+                    this.drawReferenceLine();
                 } catch (e) {
                     this.setStatus('Camera permission denied', 'waiting');
                     console.error('Camera error:', e);
@@ -403,7 +406,6 @@
             async startDetection() {
                 if (!this.ws) this.openSocket();
                 
-                // Wait for socket to be ready
                 await new Promise((resolve) => {
                     if (this.ws && this.ws.readyState === 1) {
                         resolve();
@@ -424,13 +426,19 @@
                 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('stopBtn').disabled = false;
-                this.setStatus('Detecting golf ball — Make your first putt', 'detecting');
-                if (this.sessionBadge) this.sessionBadge.textContent = 'Detecting';
-                
+                this.setStatus('Session started — Make your first putt', 'detecting');
+                if (this.sessionBadge) this.sessionBadge.textContent = 'Session Active';
                 this.loop();
             }
 
             async loop() {
+                const sendCanvas = document.createElement('canvas');
+                const sendCtx = sendCanvas.getContext('2d');
+                const MAX_SEND_WIDTH = 640;
+                
+                let frameCount = 0;
+                const FRAME_SKIP = 1;
+                
                 while (this.running && this.stream) {
                     if (!this.ws || this.ws.readyState !== 1) {
                         await new Promise(r => setTimeout(r, 100));
@@ -438,96 +446,202 @@
                     }
                     
                     if (this.inflight) {
-                        await new Promise(r => setTimeout(r, 16));
+                        await new Promise(r => setTimeout(r, 8));
                         continue;
                     }
 
-                    // Draw video frame to canvas
+                    frameCount++;
+                    
                     this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
                     
-                    // Draw all completed putt paths
+                    this.drawReferenceLine();
+                    this.drawArmedZone();
                     this.drawAllPaths();
+                    this.drawDeviation();
 
-                    // Capture frame and send
-                    this.canvas.toBlob((blob) => {
-                        if (blob && this.ws && this.ws.readyState === 1) {
-                            blob.arrayBuffer().then(buf => {
-                                if (this.ws && this.ws.readyState === 1) {
-                                    this.inflight = true;
-                                    this.ws.send(buf);
-                                }
-                            });
-                        }
-                    }, 'image/webp', 0.7);
+                    if (frameCount % FRAME_SKIP === 0) {
+                        const scale = Math.min(MAX_SEND_WIDTH / this.canvas.width, MAX_SEND_WIDTH / this.canvas.height);
+                        sendCanvas.width = Math.floor(this.canvas.width * scale);
+                        sendCanvas.height = Math.floor(this.canvas.height * scale);
+                        
+                        sendCtx.drawImage(this.video, 0, 0, sendCanvas.width, sendCanvas.height);
+                        
+                        sendCanvas.toBlob((blob) => {
+                            if (blob && this.ws && this.ws.readyState === 1) {
+                                blob.arrayBuffer().then(buf => {
+                                    if (this.ws && this.ws.readyState === 1) {
+                                        this.inflight = true;
+                                        this.ws.send(buf);
+                                    }
+                                }).catch(() => {
+                                    this.inflight = false;
+                                });
+                            } else {
+                                this.inflight = false;
+                            }
+                        }, 'image/jpeg', 0.6);
+                    }
 
-                    await new Promise(r => setTimeout(r, 66)); // ~15 FPS
+                    await new Promise(r => setTimeout(r, 33));
                 }
             }
 
-            onMessage(ev) {
-                try {
-                    const data = JSON.parse(ev.data);
-                    
-                    if (data.type === 'started' && data.session_id) {
-                        this.sessionId = data.session_id;
-                        return;
-                    }
+            drawReferenceLine() {
+                const ctx = this.ctx;
+                const canvas = this.canvas;
+                const centerX = canvas.width * 0.5;
+                const startY = 50;
+                const endY = canvas.height - 50;
+                const centerY = canvas.height / 2;
+                
+                ctx.save();
+                ctx.strokeStyle = 'rgba(220, 38, 38, 0.9)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([15, 10]);
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, startY);
+                ctx.lineTo(centerX, endY);
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+                ctx.strokeStyle = 'rgba(220, 38, 38, 1.0)';
+                ctx.fillStyle = 'rgba(220, 38, 38, 0.8)';
+                ctx.lineWidth = 4;
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.font = 'bold 16px system-ui';
+                ctx.textAlign = 'center';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.lineWidth = 3;
+                ctx.strokeText('POSITION BALL HERE', centerX, centerY - 25);
+                ctx.fillText('POSITION BALL HERE', centerX, centerY - 25);
+                
+                ctx.strokeStyle = 'rgba(220, 38, 38, 0.8)';
+                ctx.lineWidth = 3;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX - 20, startY);
+                ctx.lineTo(centerX + 20, startY);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX - 20, endY);
+                ctx.lineTo(centerX + 20, endY);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
 
-                    this.inflight = false;
-
-                    if (!data.success && data.error) {
-                        this.setStatus(`Error: ${data.error}`, 'waiting');
-                        return;
-                    }
-
-                    // Update paths
-                    if (data.path_points && data.path_points.length > 0) {
-                        // Add to current putt path
-                        const currentPath = this.puttPaths[this.currentPuttIndex] || [];
-                        data.path_points.forEach(point => {
-                            // Avoid duplicates
-                            const exists = currentPath.some(p => 
-                                Math.abs(p.x - point.x) < 1 && Math.abs(p.y - point.y) < 1
-                            );
-                            if (!exists) {
-                                currentPath.push(point);
-                            }
-                        });
-                        this.puttPaths[this.currentPuttIndex] = currentPath;
-                    }
-
-                    // Check if putt completed
-                    if (data.putts && data.putts.length > this.currentPuttIndex) {
-                        // New putt completed
-                        const completedPutt = data.putts[data.putts.length - 1];
-                        if (completedPutt && completedPutt.points) {
-                            this.puttPaths[this.currentPuttIndex] = completedPutt.points;
-                            this.currentPuttIndex = Math.min(2, data.putts.length);
+            drawArmedZone() {
+                if (!this.currentBallPosition) return;
+                
+                const ctx = this.ctx;
+                const canvas = this.canvas;
+                const centerX = canvas.width * 0.5;
+                const centerY = canvas.height * ARMED_ZONE_CENTER_Y;
+                const ballX = this.currentBallPosition.x;
+                const ballY = this.currentBallPosition.y;
+                
+                const distance = Math.sqrt(
+                    Math.pow(ballX - centerX, 2) + Math.pow(ballY - centerY, 2)
+                );
+                
+                const wasArmed = this.isArmed;
+                this.isArmed = distance <= ARMED_ZONE_RADIUS;
+                
+                if (this.isArmed !== wasArmed) {
+                    if (this.armedBadge) {
+                        if (this.isArmed) {
+                            this.armedBadge.style.display = 'inline-block';
+                            this.armedBadge.classList.add('armed');
+                        } else {
+                            this.armedBadge.style.display = 'none';
+                            this.armedBadge.classList.remove('armed');
                         }
                     }
-
-                    // Update UI
-                    this.updateResults(data);
-
-                    // Check if all 3 putts completed
-                    if (data.completed || (data.putts && data.putts.length >= 3)) {
-                        this.setStatus('All 3 putts completed!', 'completed');
-                        this.running = false;
-                        document.getElementById('stopBtn').disabled = true;
-                        document.getElementById('startBtn').disabled = false;
-                        if (this.sessionBadge) this.sessionBadge.textContent = 'Completed';
-                    }
-                } catch (e) {
-                    console.error('Message error:', e);
-                    this.inflight = false;
                 }
+                
+                ctx.save();
+                ctx.strokeStyle = this.isArmed ? 'rgba(76, 175, 80, 0.8)' : 'rgba(255, 152, 0, 0.8)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, ARMED_ZONE_RADIUS, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            drawDeviation() {
+                if (!this.currentBallPosition) {
+                    this.deviationDisplay.style.display = 'none';
+                    return;
+                }
+                
+                const deviationPx = Math.abs(this.currentBallPosition.x - this.centerX);
+                
+                // Convert to real-world units
+                let deviationReal, unit;
+                if (this.useMetric) {
+                    deviationReal = deviationPx * this.pixelsToCm;
+                    unit = 'cm';
+                } else {
+                    deviationReal = deviationPx * this.pixelsToInches;
+                    unit = 'in';
+                }
+                
+                // Format display
+                if (deviationReal < 0.1) {
+                    this.deviationDisplay.textContent = `Deviation: <0.1${unit}`;
+                } else if (deviationReal < 1) {
+                    this.deviationDisplay.textContent = `Deviation: ${deviationReal.toFixed(2)}${unit}`;
+                } else {
+                    this.deviationDisplay.textContent = `Deviation: ${deviationReal.toFixed(1)}${unit}`;
+                }
+                this.deviationDisplay.style.display = 'block';
+                
+                if (deviationPx > 0) {
+                    const ctx = this.ctx;
+                    const ballX = this.currentBallPosition.x;
+                    const ballY = this.currentBallPosition.y;
+                    
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 255, 0, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(this.centerX, ballY);
+                    ctx.lineTo(ballX, ballY);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+            
+            // Calibration method - can be called to adjust conversion factor
+            // Example: calibrate(knownRealWorldCm, measuredPixels)
+            calibrate(realWorldSize, pixelSize) {
+                this.pixelsToCm = realWorldSize / pixelSize;
+                this.pixelsToInches = this.pixelsToCm / 2.54;
+                console.log(`Calibrated: ${this.pixelsToCm.toFixed(4)} cm/pixel, ${this.pixelsToInches.toFixed(4)} in/pixel`);
+            }
+            
+            // Toggle between metric and imperial
+            setUnitSystem(useMetric) {
+                this.useMetric = useMetric;
             }
 
             drawAllPaths() {
-                // Clear canvas first (video is drawn in loop)
-                // Then draw paths on top
-                
-                const colors = ['#22c55e', '#3b82f6', '#f59e0b']; // Green, Blue, Orange
+                const colors = ['#22c55e', '#3b82f6', '#f59e0b'];
                 
                 this.puttPaths.forEach((path, puttIndex) => {
                     if (path.length < 2) return;
@@ -550,7 +664,6 @@
                     });
                     this.ctx.stroke();
                     
-                    // Draw ball at current position
                     if (path.length > 0) {
                         const lastPoint = path[path.length - 1];
                         this.ctx.fillStyle = colors[puttIndex] || '#22c55e';
@@ -566,58 +679,105 @@
                 });
             }
 
-            updateResults(data) {
-                // Update putt cards
-                this.puttsGrid.innerHTML = '';
-                for (let i = 0; i < 3; i++) {
-                    const putt = data.putts && data.putts[i];
-                    const card = document.createElement('div');
-                    card.className = 'putt-card';
+            onMessage(ev) {
+                try {
+                    const data = JSON.parse(ev.data);
                     
-                    if (putt) {
-                        card.classList.add('completed');
-                        card.innerHTML = `
-                            <div class="putt-number">Putt ${i + 1}</div>
-                            <div class="putt-status status-completed">Completed</div>
-                            <div style="margin-top:8px; font-size:12px; color:#94a3b8;">
-                                ${putt.point_count || 0} points<br>
-                                ${putt.duration ? putt.duration.toFixed(2) + 's' : ''}
-                            </div>
-                        `;
-                    } else if (i === data.putts_completed) {
-                        card.classList.add('active');
-                        card.innerHTML = `
-                            <div class="putt-number">Putt ${i + 1}</div>
-                            <div class="putt-status status-detecting">Detecting...</div>
-                        `;
+                    if (data.type === 'started' && data.session_id) {
+                        this.sessionId = data.session_id;
+                        return;
+                    }
+
+                    this.inflight = false;
+
+                    if (!data.success && data.error) {
+                        this.setStatus(`Error: ${data.error}`, 'waiting');
+                        return;
+                    }
+
+                    if (data.ball_position) {
+                        this.currentBallPosition = {
+                            x: data.ball_position.x * (this.canvas.width / 640),
+                            y: data.ball_position.y * (this.canvas.height / 640)
+                        };
                     } else {
-                        card.innerHTML = `
-                            <div class="putt-number">Putt ${i + 1}</div>
-                            <div class="putt-status status-pending">Pending</div>
+                        this.currentBallPosition = null;
+                    }
+
+                    if (data.path_points && data.path_points.length > 0) {
+                        const currentPath = this.puttPaths[this.currentPuttIndex] || [];
+                        data.path_points.forEach(point => {
+                            const scaledX = point.x * (this.canvas.width / 640);
+                            const scaledY = point.y * (this.canvas.height / 640);
+                            const exists = currentPath.some(p => 
+                                Math.abs(p.x - scaledX) < 1 && Math.abs(p.y - scaledY) < 1
+                            );
+                            if (!exists) {
+                                currentPath.push({ x: scaledX, y: scaledY });
+                            }
+                        });
+                        this.puttPaths[this.currentPuttIndex] = currentPath;
+                    }
+
+                    if (data.putts && data.putts.length > this.currentPuttIndex) {
+                        const completedPutt = data.putts[data.putts.length - 1];
+                        if (completedPutt && completedPutt.points) {
+                            this.puttPaths[this.currentPuttIndex] = completedPutt.points.map(p => ({
+                                x: p.x * (this.canvas.width / 640),
+                                y: p.y * (this.canvas.height / 640)
+                            }));
+                            this.currentPuttIndex = Math.min(2, data.putts.length);
+                        }
+                    }
+
+                    if (this.puttCounter) {
+                        this.puttCounter.textContent = `${data.putts_completed || 0} / 3`;
+                    }
+
+                    this.updateResults(data);
+
+                    if (data.completed || (data.putts && data.putts.length >= 3)) {
+                        this.setStatus('3 putts completed — Analysis ready', 'completed');
+                        this.running = false;
+                        document.getElementById('stopBtn').disabled = true;
+                        document.getElementById('startBtn').disabled = false;
+                        if (this.sessionBadge) this.sessionBadge.textContent = 'Completed';
+                    }
+                } catch (e) {
+                    console.error('Message error:', e);
+                    this.inflight = false;
+                }
+            }
+
+            updateResults(data) {
+                const putts = data.putts || [];
+                this.puttsGrid.innerHTML = '';
+                
+                for (let i = 0; i < 3; i++) {
+                    const p = putts[i];
+                    const div = document.createElement('div');
+                    div.className = 'putt';
+                    const title = `Putt ${i + 1}`;
+                    
+                    if (!p) {
+                        div.innerHTML = `<div style="font-weight:700">${title}</div><div class="pill pill-warn">Pending</div>`;
+                    } else {
+                        const conf = p.confidence ? (p.confidence * 100).toFixed(1) + '%' : '-';
+                        div.innerHTML = `
+                            <div style="font-weight:700">${title}</div>
+                            <div style="margin-top:6px">Points: <span class="pill pill-ok">${p.point_count || 0}</span></div>
+                            <div style="margin-top:6px">Duration: ${p.duration ? p.duration.toFixed(2) + 's' : '-'}</div>
                         `;
                     }
-                    
-                    this.puttsGrid.appendChild(card);
+                    this.puttsGrid.appendChild(div);
                 }
-
-                // Update summary
-                const summary = data.summary || {};
-                this.summaryEl.innerHTML = `
-                    <h4>Session Summary</h4>
-                    <div class="summary-item">
-                        <span class="summary-label">State:</span>
-                        <span class="summary-value">${data.state || 'waiting'}</span>
+                
+                const summary = document.getElementById('summary');
+                summary.innerHTML = `
+                    <div style="padding:12px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px;">
+                        <div style="font-weight:800; color:#3730a3;">Overall Result</div>
+                        <div style="margin-top:6px">Putts Completed: <span class="pill pill-ok">${data.putts_completed || 0} / 3</span></div>
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Putts Completed:</span>
-                        <span class="summary-value">${data.putts_completed || 0} / 3</span>
-                    </div>
-                    ${data.detected ? `
-                    <div class="summary-item">
-                        <span class="summary-label">Ball Detected:</span>
-                        <span class="summary-value">Yes</span>
-                    </div>
-                    ` : ''}
                 `;
             }
 
@@ -631,14 +791,23 @@
                 document.getElementById('stopBtn').disabled = true;
                 document.getElementById('startBtn').disabled = false;
                 this.setStatus('Stopped', 'waiting');
+                this.drawReferenceLine();
             }
         }
 
-        // Initialize on page load
+        // Make tracker globally accessible for calibration
+        let golfBallTracker;
+        
         document.addEventListener('DOMContentLoaded', () => {
-            new GolfBallTracker();
+            golfBallTracker = new GolfBallTracker();
+            
+            // Example calibration (uncomment and adjust values):
+            // If you know a real-world distance (e.g., 100cm) and measure it in pixels (e.g., 427px):
+            // golfBallTracker.calibrate(100, 427); // 100cm = 427 pixels
+            
+            // To switch to inches:
+            // golfBallTracker.setUnitSystem(false);
         });
     </script>
 </body>
 </html>
-
