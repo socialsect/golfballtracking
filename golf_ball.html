@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golf Ball Path Tracker - 3 Putts</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb, #22c55e);
+            color: #fff;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            min-height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 2px solid #334155;
+        }
+
+        .stage video,
+        .stage canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stage canvas {
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .controls-floating {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #111827;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        button {
+            border: 0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .results-panel {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+        }
+
+        .results-panel h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+
+        .putts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .putt-card {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .putt-card.active {
+            border-color: #22c55e;
+            background: #1e3a2e;
+        }
+
+        .putt-card.completed {
+            border-color: #2563eb;
+            background: #1e3a5e;
+        }
+
+        .putt-number {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .putt-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .status-pending {
+            background: #475569;
+            color: #fff;
+        }
+
+        .status-detecting {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        .status-completed {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .summary {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .summary h4 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #94a3b8;
+        }
+
+        .summary-value {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .status-text {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-waiting {
+            background: #1e3a5e;
+            color: #93c5fd;
+        }
+
+        .status-detecting {
+            background: #1e3a2e;
+            color: #86efac;
+        }
+
+        .status-completed {
+            background: #1e3a2e;
+            color: #86efac;
+        }
+    </style>
+    <script>
+        // WebSocket URL - can be overridden via ?ws= parameter
+        const WS_BASE = new URLSearchParams(location.search).get('ws') || 'ws://113.201.14.131:43216';
+        const WS_URL = WS_BASE.replace(/\/$/, '') + '/ws';
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⛳ Golf Ball Path Tracker — 3 Putts</h1>
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div>
+                    <div class="stage" id="stage">
+                        <video id="camera" autoplay muted playsinline style="display:none"></video>
+                        <canvas id="previewCanvas"></canvas>
+                        <div class="badge" id="sessionBadge">Idle</div>
+                        <div class="status-badge" id="statusBadge">Ready</div>
+                        <div class="controls-floating">
+                            <div style="display:flex; gap:8px;">
+                                <button id="cameraBtn" class="btn-success">Use Camera</button>
+                                <button id="startBtn" class="btn-primary" disabled>Start Detection</button>
+                            </div>
+                            <button id="stopBtn" class="btn-danger" disabled>Stop</button>
+                        </div>
+                    </div>
+                    <div id="status" class="status-text status-waiting">Ready — Start camera to begin</div>
+                </div>
+                <div class="results-panel">
+                    <h3>Results</h3>
+                    <div class="putts-grid" id="puttsGrid"></div>
+                    <div class="summary" id="summary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GolfBallTracker {
+            constructor() {
+                this.video = document.getElementById('camera');
+                this.canvas = document.getElementById('previewCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.sessionBadge = document.getElementById('sessionBadge');
+                this.statusBadge = document.getElementById('statusBadge');
+                this.statusEl = document.getElementById('status');
+                this.puttsGrid = document.getElementById('puttsGrid');
+                this.summaryEl = document.getElementById('summary');
+
+                this.ws = null;
+                this.sessionId = null;
+                this.running = false;
+                this.inflight = false;
+                this.stream = null;
+                
+                // Store paths for all putts
+                this.puttPaths = [[], [], []]; // 3 putts
+                this.currentPuttIndex = 0;
+
+                // Setup event listeners
+                document.getElementById('cameraBtn').onclick = () => this.startCamera();
+                document.getElementById('startBtn').onclick = () => this.startDetection();
+                document.getElementById('stopBtn').onclick = () => this.stop();
+            }
+
+            setStatus(text, cls) {
+                this.statusEl.textContent = text;
+                this.statusEl.className = `status-text status-${cls}`;
+                if (this.statusBadge) this.statusBadge.textContent = text;
+            }
+
+            async startCamera() {
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' },
+                        audio: false
+                    });
+                    this.video.srcObject = this.stream;
+                    this.video.style.display = 'block';
+                    await this.video.play();
+                    await new Promise(r => this.video.onloadedmetadata = r);
+                    
+                    // Set canvas size to match video
+                    this.canvas.width = this.video.videoWidth;
+                    this.canvas.height = this.video.videoHeight;
+                    
+                    document.getElementById('startBtn').disabled = false;
+                    this.setStatus('Camera ready — Start detection to track golf ball', 'waiting');
+                    if (this.sessionBadge) this.sessionBadge.textContent = 'Camera Ready';
+                } catch (e) {
+                    this.setStatus('Camera permission denied', 'waiting');
+                    console.error('Camera error:', e);
+                }
+            }
+
+            openSocket() {
+                this.ws = new WebSocket(WS_URL);
+                this.ws.binaryType = 'arraybuffer';
+                
+                this.ws.onopen = () => {
+                    this.ws.send(JSON.stringify({
+                        type: 'start',
+                        user_id: `user_${Date.now()}`
+                    }));
+                };
+                
+                this.ws.onmessage = (ev) => this.onMessage(ev);
+                this.ws.onclose = () => {
+                    this.ws = null;
+                    this.running = false;
+                    this.inflight = false;
+                };
+                this.ws.onerror = (e) => {
+                    console.error('WebSocket error:', e);
+                    this.setStatus('Connection error', 'waiting');
+                };
+            }
+
+            async startDetection() {
+                if (!this.ws) this.openSocket();
+                
+                // Wait for socket to be ready
+                await new Promise((resolve) => {
+                    if (this.ws && this.ws.readyState === 1) {
+                        resolve();
+                    } else {
+                        const check = setInterval(() => {
+                            if (this.ws && this.ws.readyState === 1) {
+                                clearInterval(check);
+                                resolve();
+                            }
+                        }, 100);
+                    }
+                });
+
+                this.ws.send(JSON.stringify({ type: 'start' }));
+                this.running = true;
+                this.currentPuttIndex = 0;
+                this.puttPaths = [[], [], []];
+                
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                this.setStatus('Detecting golf ball — Make your first putt', 'detecting');
+                if (this.sessionBadge) this.sessionBadge.textContent = 'Detecting';
+                
+                this.loop();
+            }
+
+            async loop() {
+                while (this.running && this.stream) {
+                    if (!this.ws || this.ws.readyState !== 1) {
+                        await new Promise(r => setTimeout(r, 100));
+                        continue;
+                    }
+                    
+                    if (this.inflight) {
+                        await new Promise(r => setTimeout(r, 16));
+                        continue;
+                    }
+
+                    // Draw video frame to canvas
+                    this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                    
+                    // Draw all completed putt paths
+                    this.drawAllPaths();
+
+                    // Capture frame and send
+                    this.canvas.toBlob((blob) => {
+                        if (blob && this.ws && this.ws.readyState === 1) {
+                            blob.arrayBuffer().then(buf => {
+                                if (this.ws && this.ws.readyState === 1) {
+                                    this.inflight = true;
+                                    this.ws.send(buf);
+                                }
+                            });
+                        }
+                    }, 'image/webp', 0.7);
+
+                    await new Promise(r => setTimeout(r, 66)); // ~15 FPS
+                }
+            }
+
+            onMessage(ev) {
+                try {
+                    const data = JSON.parse(ev.data);
+                    
+                    if (data.type === 'started' && data.session_id) {
+                        this.sessionId = data.session_id;
+                        return;
+                    }
+
+                    this.inflight = false;
+
+                    if (!data.success && data.error) {
+                        this.setStatus(`Error: ${data.error}`, 'waiting');
+                        return;
+                    }
+
+                    // Update paths
+                    if (data.path_points && data.path_points.length > 0) {
+                        // Add to current putt path
+                        const currentPath = this.puttPaths[this.currentPuttIndex] || [];
+                        data.path_points.forEach(point => {
+                            // Avoid duplicates
+                            const exists = currentPath.some(p => 
+                                Math.abs(p.x - point.x) < 1 && Math.abs(p.y - point.y) < 1
+                            );
+                            if (!exists) {
+                                currentPath.push(point);
+                            }
+                        });
+                        this.puttPaths[this.currentPuttIndex] = currentPath;
+                    }
+
+                    // Check if putt completed
+                    if (data.putts && data.putts.length > this.currentPuttIndex) {
+                        // New putt completed
+                        const completedPutt = data.putts[data.putts.length - 1];
+                        if (completedPutt && completedPutt.points) {
+                            this.puttPaths[this.currentPuttIndex] = completedPutt.points;
+                            this.currentPuttIndex = Math.min(2, data.putts.length);
+                        }
+                    }
+
+                    // Update UI
+                    this.updateResults(data);
+
+                    // Check if all 3 putts completed
+                    if (data.completed || (data.putts && data.putts.length >= 3)) {
+                        this.setStatus('All 3 putts completed!', 'completed');
+                        this.running = false;
+                        document.getElementById('stopBtn').disabled = true;
+                        document.getElementById('startBtn').disabled = false;
+                        if (this.sessionBadge) this.sessionBadge.textContent = 'Completed';
+                    }
+                } catch (e) {
+                    console.error('Message error:', e);
+                    this.inflight = false;
+                }
+            }
+
+            drawAllPaths() {
+                // Clear canvas first (video is drawn in loop)
+                // Then draw paths on top
+                
+                const colors = ['#22c55e', '#3b82f6', '#f59e0b']; // Green, Blue, Orange
+                
+                this.puttPaths.forEach((path, puttIndex) => {
+                    if (path.length < 2) return;
+                    
+                    this.ctx.save();
+                    this.ctx.strokeStyle = colors[puttIndex] || '#22c55e';
+                    this.ctx.lineWidth = 4;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.lineJoin = 'round';
+                    this.ctx.shadowBlur = 8;
+                    this.ctx.shadowColor = colors[puttIndex] || '#22c55e';
+                    
+                    this.ctx.beginPath();
+                    path.forEach((point, i) => {
+                        if (i === 0) {
+                            this.ctx.moveTo(point.x, point.y);
+                        } else {
+                            this.ctx.lineTo(point.x, point.y);
+                        }
+                    });
+                    this.ctx.stroke();
+                    
+                    // Draw ball at current position
+                    if (path.length > 0) {
+                        const lastPoint = path[path.length - 1];
+                        this.ctx.fillStyle = colors[puttIndex] || '#22c55e';
+                        this.ctx.beginPath();
+                        this.ctx.arc(lastPoint.x, lastPoint.y, 8, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.strokeStyle = '#fff';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.stroke();
+                    }
+                    
+                    this.ctx.restore();
+                });
+            }
+
+            updateResults(data) {
+                // Update putt cards
+                this.puttsGrid.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    const putt = data.putts && data.putts[i];
+                    const card = document.createElement('div');
+                    card.className = 'putt-card';
+                    
+                    if (putt) {
+                        card.classList.add('completed');
+                        card.innerHTML = `
+                            <div class="putt-number">Putt ${i + 1}</div>
+                            <div class="putt-status status-completed">Completed</div>
+                            <div style="margin-top:8px; font-size:12px; color:#94a3b8;">
+                                ${putt.point_count || 0} points<br>
+                                ${putt.duration ? putt.duration.toFixed(2) + 's' : ''}
+                            </div>
+                        `;
+                    } else if (i === data.putts_completed) {
+                        card.classList.add('active');
+                        card.innerHTML = `
+                            <div class="putt-number">Putt ${i + 1}</div>
+                            <div class="putt-status status-detecting">Detecting...</div>
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <div class="putt-number">Putt ${i + 1}</div>
+                            <div class="putt-status status-pending">Pending</div>
+                        `;
+                    }
+                    
+                    this.puttsGrid.appendChild(card);
+                }
+
+                // Update summary
+                const summary = data.summary || {};
+                this.summaryEl.innerHTML = `
+                    <h4>Session Summary</h4>
+                    <div class="summary-item">
+                        <span class="summary-label">State:</span>
+                        <span class="summary-value">${data.state || 'waiting'}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Putts Completed:</span>
+                        <span class="summary-value">${data.putts_completed || 0} / 3</span>
+                    </div>
+                    ${data.detected ? `
+                    <div class="summary-item">
+                        <span class="summary-label">Ball Detected:</span>
+                        <span class="summary-value">Yes</span>
+                    </div>
+                    ` : ''}
+                `;
+            }
+
+            stop() {
+                this.running = false;
+                if (this.ws && this.ws.readyState === 1) {
+                    try {
+                        this.ws.send(JSON.stringify({ type: 'stop' }));
+                    } catch (e) {}
+                }
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('startBtn').disabled = false;
+                this.setStatus('Stopped', 'waiting');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            new GolfBallTracker();
+        });
+    </script>
+</body>
+</html>
+
